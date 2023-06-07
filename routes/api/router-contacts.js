@@ -15,8 +15,10 @@ const {
 const { ctrlrWrapper } = require("../../helpers");
 const validateBody = require("../../middlewares/validateBody.js");
 const isValidById = require("../../middlewares/isValidById");
-const router = express.Router();
+const authenticate = require("../../middlewares/authenticate");
 
+const router = express.Router();
+router.use(authenticate);
 router.get("/", ctrlrWrapper(getListContacts));
 
 router.get("/:contactId", isValidById, ctrlrWrapper(getById));
