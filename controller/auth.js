@@ -82,7 +82,7 @@ const logout = async (req, res) => {
 const updateAvatar = async (req, res, next) => {
   const { _id } = req.user;
   const { path: tempPath, originalname } = req.file;
-  const resultDir = path.join(avatarDir, originalname);
+  const resultDir = path.join(avatarDir, _id + originalname);
 
   await Jimp.read(tempPath).then((image) => {
     image.resize(250, 250).write(tempPath);
