@@ -3,6 +3,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = process.env;
 const { HttpError } = require("../helpers/index.js");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
+const avatarDir = path.resolve("public", "avatars");
 
 async function register(req, res, next) {
   try {
@@ -12,11 +17,14 @@ async function register(req, res, next) {
 
     if (user) throw HttpError(409, "Email in use");
 
+    const avatarUrl = gravatar.url(email);
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       email,
       name,
       password: hashedPassword,
+      avatarUrl,
     });
 
     return res.status(201).json({
@@ -71,9 +79,28 @@ const logout = async (req, res) => {
   res.status(204).json();
 };
 
+const updateAvatar = async (req, res, next) => {
+  const { _id } = req.user;
+  const { path: tempPath, originalname } = req.file;
+  const resultDir = path.join(avatarDir, originalname);
+
+  await Jimp.read(tempPath).then((image) => {
+    image.resize(250, 250).write(tempPath);
+  });
+
+  await fs.rename(tempPath, resultDir);
+  const avatarUrl = path.join("avatars", originalname);
+  await User.findByIdAndUpdate(_id, { avatarUrl });
+
+  res.json({
+    avatarUrl,
+  });
+};
+
 module.exports = {
   register,
   login,
   getCurrent,
   logout,
+  updateAvatar,
 };
