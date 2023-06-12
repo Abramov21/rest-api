@@ -9,11 +9,13 @@ const {
   getCurrent,
   logout,
   updateAvatar,
+  verify,
+  resendVerify,
 } = require("../../controller/auth");
 const authenticate = require("../../middlewares/authenticate");
 const upload = require("../../middlewares/upload");
 
-const { authSchema } = require("../../models/users");
+const { authSchema, emailSchema } = require("../../models/users");
 
 router.post("/register", validateBody(authSchema), ctrlrWrapper(register));
 
@@ -29,4 +31,7 @@ router.patch(
   ctrlrWrapper(updateAvatar)
 );
 
+router.get("/verify/:verificationToken", ctrlrWrapper(verify));
+
+router.post("/verify", validateBody(emailSchema), ctrlrWrapper(resendVerify));
 module.exports = router;
