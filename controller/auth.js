@@ -1,7 +1,7 @@
 const { User } = require("../models/users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY, BASE_URL, PORT } = process.env;
+const { SECRET_KEY } = process.env;
 const { HttpError } = require("../helpers/index.js");
 const gravatar = require("gravatar");
 const path = require("path");
@@ -33,7 +33,6 @@ async function register(req, res, next) {
       verificationToken,
     });
 
-    // const verifyLink = `${BASE_URL}:${PORT}/api/auth/verify/:${verificationToken}`;
     const verifyEmail = {
       to: email,
       subject: "verify email",
@@ -158,7 +157,6 @@ const resendVerify = async (req, res, next) => {
     if (user.verify)
       throw HttpError(400, "Verification has already been passed");
 
-    // const verifyLink = `${BASE_URL}:${PORT}/api/auth/verify/:${user.verificationToken}`;
     const verifyEmail = {
       to: user.email,
       subject: "verify email",
